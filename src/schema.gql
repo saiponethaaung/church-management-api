@@ -1,0 +1,51 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AccessToken {
+  accessToken: String!
+}
+
+"""church"""
+type ChurchResponse {
+  id: ID!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Mutation {
+  createChurch: ChurchResponse!
+  login(loginData: UserLoginDTO!): AccessToken!
+  register(registerData: UserRegisterDTO!): UserResponse!
+}
+
+type Query {
+  getChurch: ChurchResponse!
+  getProfile: UserResponse!
+}
+
+input UserLoginDTO {
+  email: String!
+  password: String!
+}
+
+input UserRegisterDTO {
+  email: String!
+  name: String!
+  password: String!
+}
+
+"""user"""
+type UserResponse {
+  createdAt: DateTime!
+  createdBy: String
+  email: String!
+  id: ID!
+  name: String!
+  updatedAt: DateTime!
+  updatedBy: String
+  verified: Boolean!
+}

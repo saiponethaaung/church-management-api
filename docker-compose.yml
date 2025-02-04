@@ -1,0 +1,16 @@
+services:
+  postgres:
+    container_name: cm-postgres
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: cmapp
+    ports:
+      - '5435:5432'
+    volumes:
+      - ./docker-compose/postgres:/var/lib/postgresql/data
+
+networks:
+  shared_network:
+    driver: bridge

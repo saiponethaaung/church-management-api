@@ -1,0 +1,160 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id String @id @default(uuid(7))
+
+  name     String
+  email    String @unique
+  password String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  createdBy String @map("created_by")
+  updatedBy String @map("updated_by")
+
+  @@map("admin")
+}
+
+model User {
+  id String @id @default(uuid(7))
+
+  name     String
+  email    String
+  password String
+  verified Boolean @default(false)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  createdBy String? @map("created_by")
+  updatedBy String? @map("updated_by")
+
+  userVerification UserVerification[]
+  church           Church[]
+  churchMember     ChurchMember[]
+
+  @@map("user")
+}
+
+model UserVerification {
+  id String @id @default(uuid(7))
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  code   String
+  status Boolean @default(true)
+
+  activatedAt DateTime? @default(now()) @map("activated_at")
+  expiredAt   DateTime  @default(now()) @map("expired_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  @@unique([code, userId])
+  @@map("user_verification")
+}
+
+model Country {
+  id     String   @id @default(uuid(7))
+  church Church[]
+
+  @@map("country")
+}
+
+model Church {
+  id String @id @default(uuid(7))
+
+  name     String
+  logo     String?
+  verified Boolean @default(false)
+  address  Json?
+
+  countryId String
+
+  createdBy String @map("created_by")
+  updatedBy String @map("updated_by")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  createdByUser User    @relation(fields: [createdBy], references: [id])
+  country       Country @relation(fields: [countryId], references: [id])
+
+  @@map("church")
+}
+
+model ChurchInfo {
+  id String @id @default(uuid(7))
+
+  chruchId String
+
+  createdBy String @map("created_by")
+  updatedBy String @map("updated_by")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  @@map("church_info")
+}
+
+model ChurchMember {
+  id String @id @default(uuid(7))
+
+  churchId String
+  userId   String?
+  name     String
+  image    String?
+  email    String?
+  phone    String?
+  dob      String?
+  address  Json?
+
+  createdBy String @map("created_by")
+  updatedBy String @map("updated_by")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  createdByUser User? @relation(fields: [createdBy], references: [id])
+
+  @@map("church_member")
+}
+
+// model ChurchSchedule {
+//   id String @id @default(uuid(7))
+
+//   createdBy String @map("created_by")
+//   updatedBy String @map("updated_by")
+
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @default(now()) @map("updated_at")
+
+//   @@map("church_schedule")
+// }
+
+// model ChurchDonation {
+//   id String @id @default(uuid(7))
+
+//   createdBy String @map("created_by")
+//   updatedBy String @map("updated_by")
+
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @default(now()) @map("updated_at")
+
+//   @@map("church_donation")
+// }
