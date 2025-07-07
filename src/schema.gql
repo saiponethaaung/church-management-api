@@ -6,9 +6,40 @@ type AccessToken {
   accessToken: String!
 }
 
+"""churchAddress"""
+type ChurchAddress {
+  street: String!
+}
+
+"""churchPagination"""
+type ChurchPaginationResponse {
+  data: [ChurchResponse!]!
+  pagination: PaginationResponse!
+}
+
 """church"""
 type ChurchResponse {
+  address: ChurchAddress!
+  countryId: String!
   id: ID!
+  logo: String!
+  name: String!
+  verified: Boolean!
+}
+
+"""createChurch"""
+input CreateChurchData {
+  name: String!
+}
+
+"""createMember"""
+input CreateMemberData {
+  churchId: String!
+  dob: String
+  email: String
+  image: String
+  name: String!
+  phone: String
 }
 
 """
@@ -16,14 +47,54 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+"""createMember"""
+input GetMembersData {
+  churchId: String!
+  limit: Float!
+  page: Float!
+}
+
+"""memberAddress"""
+type MemberAddress {
+  street: String!
+}
+
+"""memberPagination"""
+type MemberPaginationResponse {
+  data: [MemberResponse!]!
+  pagination: PaginationResponse!
+}
+
+"""member"""
+type MemberResponse {
+  address: MemberAddress!
+  dob: String
+  email: String
+  id: String!
+  image: String
+  name: String!
+  phone: String
+}
+
 type Mutation {
-  createChurch: ChurchResponse!
+  createChurch(createChurch: CreateChurchData!): ChurchResponse!
+  createMember(createMember: CreateMemberData!): MemberResponse!
   login(loginData: UserLoginDTO!): AccessToken!
   register(registerData: UserRegisterDTO!): UserResponse!
 }
 
+"""paginationResponse"""
+type PaginationResponse {
+  currentPage: Float!
+  limit: Float!
+  totalCount: Float!
+  totalPage: Float!
+}
+
 type Query {
-  getChurch: ChurchResponse!
+  getChurch(id: String!): ChurchResponse!
+  getChurchs: ChurchPaginationResponse!
+  getMembers(getMembers: GetMembersData!): MemberPaginationResponse!
   getProfile: UserResponse!
 }
 

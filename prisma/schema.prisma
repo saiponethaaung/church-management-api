@@ -43,9 +43,10 @@ model User {
   createdBy String? @map("created_by")
   updatedBy String? @map("updated_by")
 
-  userVerification UserVerification[]
-  church           Church[]
-  churchMember     ChurchMember[]
+  userVerification      UserVerification[]
+  church                Church[]
+  churchMember          ChurchMember[]     @relation(name: "church_member_key")
+  churchMemberCreatedBy ChurchMember[]
 
   @@map("user")
 }
@@ -92,8 +93,9 @@ model Church {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
 
-  createdByUser User    @relation(fields: [createdBy], references: [id])
-  country       Country @relation(fields: [countryId], references: [id])
+  createdByUser User           @relation(fields: [createdBy], references: [id])
+  country       Country        @relation(fields: [countryId], references: [id])
+  churchMember  ChurchMember[]
 
   @@map("church")
 }
@@ -115,14 +117,18 @@ model ChurchInfo {
 model ChurchMember {
   id String @id @default(uuid(7))
 
-  churchId String
-  userId   String?
-  name     String
-  image    String?
-  email    String?
-  phone    String?
-  dob      String?
-  address  Json?
+  name    String
+  image   String?
+  email   String?
+  phone   String?
+  dob     String?
+  address Json?
+
+  churchId String @map("church_id")
+  church   Church @relation(fields: [churchId], references: [id])
+
+  userId String? @map("user_id")
+  user   User?   @relation(fields: [userId], references: [id], name: "church_member_key")
 
   createdBy String @map("created_by")
   updatedBy String @map("updated_by")

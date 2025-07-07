@@ -10,12 +10,18 @@ export class UserJwtStrategy extends PassportStrategy(Strategy, 'user-jwt') {
   constructor(private readonly userAuthService: UserAuthService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      // jwtFromRequest: (req) => {
+      // console.log('cookie', req.cookies);
+      // console.log('headers', req.headers.authorization);
+
+      // return req.headers.authorization.split(" ")[1];
+      // },
       ignoreExpiration: false,
       secretOrKey: '10',
       passReqToCallback: true,
     });
   }
-  
+
   async validate(payload: any) {
     const user = await this.userAuthService.profile({
       id: payload.id,

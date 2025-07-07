@@ -9,14 +9,16 @@ export interface ServiceResponse<T> {
   result?: T;
 }
 
+export interface PaginationInterface {
+  totalCount: number;
+  totalPage: number;
+  currentPage: number;
+  limit: number;
+  // nextCursor?: string;
+  // prevCursor?: string;
+}
+
 export interface PaginationResponse<T> {
   data: T[];
-  pagination: {
-    totalCount: number;
-    totalPage: number;
-    currentPage: number;
-    limit: number;
-    // nextCursor?: string;
-    // prevCursor?: string;
-  };
+  pagination: PaginationInterface;
 }

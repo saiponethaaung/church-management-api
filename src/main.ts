@@ -6,6 +6,7 @@ import { InputValidationPipe } from './pipes/input-validation.pipe';
 import { GlobalExceptionHandlerFilter } from './filters/global-exception-handler/global-exception-handler.filter';
 import { ResponseFormatInterceptor } from './interceptors/response-format/response-format.interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -35,6 +36,8 @@ async function bootstrap() {
 
   // Set global prefix
   app.setGlobalPrefix('api');
+
+  app.use(cookieParser());
 
   // Swagger setup
   const config = new DocumentBuilder()

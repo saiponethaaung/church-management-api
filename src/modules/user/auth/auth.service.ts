@@ -6,17 +6,18 @@ import * as bcrypt from 'bcrypt';
 import { UserLoginDTO } from './dto/request/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
+import { UserRepo } from 'src/libs/prisma/repo/user.repo';
 
 @Injectable()
 export class UserAuthService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly repo: UserRepo,
     private readonly jwtService: JwtService,
   ) {}
 
   async register(dto: UserRegisterDTO): Promise<ServiceResponse<any>> {
     // check email already exists
-    const emailCheck = await this.prisma.user.findFirst({
+    const emailCheck = await this.repo.findOne({
       where: { email: dto.email },
     });
 
@@ -32,7 +33,7 @@ export class UserAuthService {
     }
 
     // if email does not exist, create user
-    const user = await this.prisma.user.create({
+    const user = await this.repo.create({
       data: {
         email: dto.email,
         password: bcrypt.hashSync(dto.password, 10),
@@ -51,7 +52,7 @@ export class UserAuthService {
 
   async login(dto: UserLoginDTO): Promise<ServiceResponse<any>> {
     // check email exists
-    const user = await this.prisma.user.findFirst({
+    const user = await this.repo.findOne({
       where: { email: dto.email },
     });
 
@@ -101,7 +102,7 @@ export class UserAuthService {
   }
 
   async profile(user: { id: string; email: string }) {
-    return this.prisma.user.findFirst({
+    return this.repo.findOne({
       where: { id: user.id, email: user.email },
     });
   }
