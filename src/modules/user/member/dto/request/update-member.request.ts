@@ -1,5 +1,4 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { Transform } from 'class-transformer';
 import {
   IsDateString,
   IsEmail,
@@ -9,13 +8,13 @@ import {
   IsUUID,
 } from 'class-validator';
 
-@InputType({ description: 'createMember' })
-export class CreateMemberData {
+@InputType({ description: 'updateMember' })
+export class UpdateMemberData {
   @Field()
   @IsString({ message: 'invalid_string' })
   @IsUUID(7, { message: 'invalid_id' })
   @IsNotEmpty({ message: 'required' })
-  churchId: string;
+  id: string;
 
   @Field()
   @IsString({ message: 'invalid_string' })
@@ -25,18 +24,12 @@ export class CreateMemberData {
   @Field({ nullable: true })
   @IsString({ message: 'invalid_string' })
   @IsOptional({})
-  @Transform((params) => {
-    return params.value === '' ? undefined : params.value;
-  })
   image?: string;
 
   @Field({ nullable: true })
   @IsString({ message: 'invalid_string' })
   @IsEmail({}, { message: 'invalid_email' })
   @IsOptional({})
-  @Transform((params) => {
-    return params.value === '' ? undefined : params.value;
-  })
   email?: string;
 
   @Field({ nullable: true })

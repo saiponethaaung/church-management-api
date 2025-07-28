@@ -1,23 +1,14 @@
-import { Field, InputType } from '@nestjs/graphql';
-import {
-  IsDate,
-  IsEmail,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsPhoneNumber,
-  IsString,
-  IsUUID,
-} from 'class-validator';
+import { Field, InputType, Int } from '@nestjs/graphql';
+import { IsNotEmpty, IsNumber, IsString, IsUUID } from 'class-validator';
 
 @InputType({ description: 'createMember' })
 export class GetMembersData {
-  @Field()
+  @Field(() => Int)
   @IsNumber({}, { message: 'invalid_number' })
   @IsNotEmpty({ message: 'required' })
   page: number;
 
-  @Field()
+  @Field(() => Int)
   @IsNumber({}, { message: 'invalid_number' })
   @IsNotEmpty({ message: 'required' })
   limit: number;

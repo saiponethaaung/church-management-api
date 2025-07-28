@@ -47,11 +47,16 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+"""deleteMember"""
+input DeleteMemberData {
+  id: String!
+}
+
 """createMember"""
 input GetMembersData {
   churchId: String!
-  limit: Float!
-  page: Float!
+  limit: Int!
+  page: Int!
 }
 
 """memberAddress"""
@@ -76,11 +81,18 @@ type MemberResponse {
   phone: String
 }
 
+"""message"""
+type MessageResponse {
+  message: String!
+}
+
 type Mutation {
   createChurch(createChurch: CreateChurchData!): ChurchResponse!
   createMember(createMember: CreateMemberData!): MemberResponse!
+  deleteMember(deleteMember: DeleteMemberData!): MessageResponse!
   login(loginData: UserLoginDTO!): AccessToken!
   register(registerData: UserRegisterDTO!): UserResponse!
+  updateMember(updateMember: UpdateMemberData!): MemberResponse!
 }
 
 """paginationResponse"""
@@ -96,6 +108,16 @@ type Query {
   getChurchs: ChurchPaginationResponse!
   getMembers(getMembers: GetMembersData!): MemberPaginationResponse!
   getProfile: UserResponse!
+}
+
+"""updateMember"""
+input UpdateMemberData {
+  dob: String
+  email: String
+  id: String!
+  image: String
+  name: String!
+  phone: String
 }
 
 input UserLoginDTO {

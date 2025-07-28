@@ -6,6 +6,9 @@ import { ServiceResponse } from 'src/interfaces/response.interface';
 import { MemberResponse } from './dto/response/member.response';
 import { GetMembersData } from './dto/request/get-members.request';
 import { MemberPaginationResponse } from './dto/response/member-pagination.response';
+import { UpdateMemberData } from './dto/request/update-member.request';
+import { DeleteMemberData } from './dto/request/delete-member.request';
+import { MessageResponse } from 'src/dto/response/message.response';
 
 @Injectable()
 export class MemberService {
@@ -29,6 +32,21 @@ export class MemberService {
     return { status: true, code: 201, result: new MemberResponse(member) };
   }
 
+  async updateMember(
+    user: User,
+    { id, ...dto }: UpdateMemberData,
+  ): Promise<ServiceResponse<MemberResponse>> {
+    const member = await this.repo.update({
+      where: { id },
+      data: {
+        ...dto,
+        updatedBy: user.id,
+      },
+    });
+
+    return { status: true, code: 201, result: new MemberResponse(member) };
+  }
+
   async getMembers({
     churchId,
     limit,
@@ -36,12 +54,21 @@ export class MemberService {
   }: GetMembersData): Promise<ServiceResponse<MemberPaginationResponse>> {
     const { data: members, pagination } = await this.repo.paginate({
       where: { churchId },
-      skip: page === 1 ? 0 : page * limit,
+      skip: page === 1 ? 0 : (page - 1) * limit,
       take: limit,
     });
 
     const data = members.map((m) => new MemberResponse(m));
 
     return { status: true, result: { data, pagination } };
+  }
+
+  async deleteMember(
+    user: User,
+    { id }: DeleteMemberData,
+  ): Promise<ServiceResponse<MessageResponse>> {
+    await this.repo.delete(id);
+
+    return { status: true, result: { message: 'Success' } };
   }
 }
