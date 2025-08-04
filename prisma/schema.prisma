@@ -44,9 +44,19 @@ model User {
   updatedBy String? @map("updated_by")
 
   userVerification      UserVerification[]
-  church                Church[]
-  churchMember          ChurchMember[]     @relation(name: "church_member_key")
+  churches              Church[]
+  churchMembers         ChurchMember[]     @relation(name: "church_member_key")
   churchMemberCreatedBy ChurchMember[]
+  createdPrograms       Program[]          @relation(name: "program_created_by")
+  updatedPrograms       Program[]          @relation(name: "program_updated_by")
+  createdProgramTypes   ProgramType[]      @relation(name: "program_type_created_by")
+  updatedProgramTypes   ProgramType[]      @relation(name: "program_type_updated_by")
+  createdAnnouncements  Announcement[]     @relation(name: "announcement_created_by")
+  updatedAnnouncements  Announcement[]     @relation(name: "announcement_updated_by")
+  createdDonationTypes  DonationType[]     @relation(name: "donation_type_created_by")
+  updatedDonationTypes  DonationType[]     @relation(name: "donation_type_updated_by")
+  createdDonations      Donation[]         @relation(name: "donation_created_by")
+  updatedDonations      Donation[]         @relation(name: "donation_updated_by")
 
   @@map("user")
 }
@@ -95,7 +105,11 @@ model Church {
 
   createdByUser User           @relation(fields: [createdBy], references: [id])
   country       Country        @relation(fields: [countryId], references: [id])
-  churchMember  ChurchMember[]
+  churchMembers ChurchMember[]
+  programs      Program[]
+  programTypes  ProgramType[]
+  announcements Announcement[]
+  DonationType  DonationType[]
 
   @@map("church")
 }
@@ -136,31 +150,126 @@ model ChurchMember {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
 
-  createdByUser User? @relation(fields: [createdBy], references: [id])
+  createdByUser User?      @relation(fields: [createdBy], references: [id])
+  donations     Donation[]
 
   @@map("church_member")
 }
 
-// model ChurchSchedule {
-//   id String @id @default(uuid(7))
+model ProgramType {
+  id String @id @default(uuid(7))
 
-//   createdBy String @map("created_by")
-//   updatedBy String @map("updated_by")
+  name        String
+  description String
+  status      Boolean @default(true)
+  isGlobal    Boolean @default(false)
 
-//   createdAt DateTime @default(now()) @map("created_at")
-//   updatedAt DateTime @default(now()) @map("updated_at")
+  churchId String? @map("church_id")
+  chruch   Church? @relation(fields: [churchId], references: [id])
 
-//   @@map("church_schedule")
-// }
+  createdBy     String @map("created_by")
+  createdByUser User   @relation(fields: [createdBy], references: [id], name: "program_type_created_by")
+  updatedBy     String @map("updated_by")
+  updatedByUser User   @relation(fields: [updatedBy], references: [id], name: "program_type_updated_by")
 
-// model ChurchDonation {
-//   id String @id @default(uuid(7))
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @map("updated_at")
+  programs  Program[]
 
-//   createdBy String @map("created_by")
-//   updatedBy String @map("updated_by")
+  @@map("program_type")
+}
 
-//   createdAt DateTime @default(now()) @map("created_at")
-//   updatedAt DateTime @default(now()) @map("updated_at")
+model Program {
+  id String @id @default(uuid(7))
 
-//   @@map("church_donation")
-// }
+  name          String
+  description   String?
+  isFeatured    Boolean     @default(false)
+  status        Boolean     @default(true)
+  startDate     DateTime?
+  endDate       DateTime?
+  // requiredRegistration Boolean @default()
+  programTypeId String      @map("program_type_id")
+  programType   ProgramType @relation(fields: [programTypeId], references: [id])
+
+  churchId String @map("church_id")
+  church   Church @relation(fields: [churchId], references: [id])
+
+  createdBy     String @map("created_by")
+  createdByUser User   @relation(fields: [createdBy], references: [id], name: "program_created_by")
+  updatedBy     String @map("updated_by")
+  updatedByUser User   @relation(fields: [updatedBy], references: [id], name: "program_updated_by")
+
+  createdAt            DateTime       @default(now()) @map("created_at")
+  updatedAt            DateTime       @default(now()) @map("updated_at")
+  userId               String?
+  programAnnouncements Announcement[]
+
+  @@map("program")
+}
+
+model Announcement {
+  id String @id @default(uuid(7))
+
+  name    String
+  message String
+
+  churchId String @map("church_id")
+  church   Church @relation(fields: [churchId], references: [id])
+
+  programId String  @map("program_id")
+  program   Program @relation(fields: [programId], references: [id])
+
+  createdBy     String @map("created_by")
+  createdByUser User   @relation(fields: [createdBy], references: [id], name: "announcement_created_by")
+  updatedBy     String @map("updated_by")
+  updatedByUser User   @relation(fields: [updatedBy], references: [id], name: "announcement_updated_by")
+
+  @@map("announcement")
+}
+
+model DonationType {
+  id String @id @default(uuid(7))
+
+  name        String
+  description String
+  status      Boolean @default(true)
+  isGlobal    Boolean @default(false)
+
+  churchId String? @map("church_id")
+  chruch   Church? @relation(fields: [churchId], references: [id])
+
+  createdBy     String @map("created_by")
+  createdByUser User   @relation(fields: [createdBy], references: [id], name: "donation_type_created_by")
+  updatedBy     String @map("updated_by")
+  updatedByUser User   @relation(fields: [updatedBy], references: [id], name: "donation_type_updated_by")
+
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @default(now()) @map("updated_at")
+  donations Donation[]
+
+  @@map("donation_type")
+}
+
+model Donation {
+  id String @id @default(uuid(7))
+
+  amount Int
+
+  memberId String?
+  member   ChurchMember @relation(fields: [churchMemberId], references: [id])
+
+  donationTypeId String
+  donationType   DonationType @relation(fields: [donationTypeId], references: [id])
+
+  createdBy     String @map("created_by")
+  createdByUser User   @relation(fields: [createdBy], references: [id], name: "donation_created_by")
+  updatedBy     String @map("updated_by")
+  updatedByUser User   @relation(fields: [updatedBy], references: [id], name: "donation_updated_by")
+
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @default(now()) @map("updated_at")
+  churchMemberId String
+
+  @@map("donation")
+}

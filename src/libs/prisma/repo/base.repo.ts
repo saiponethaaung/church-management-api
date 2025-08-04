@@ -62,10 +62,10 @@ export abstract class BaseRepo<
     ];
   }
 
-  findOne<A extends Prisma.Args<T, 'findFirst'>>(
+  async findOne<A extends Prisma.Args<T, 'findFirst'>>(
     args: A,
     includeSoftDelete = false,
-  ): Prisma.Result<T, A, 'findFirst'> {
+  ): Promise<Prisma.Result<T, A, 'findFirst'>> {
     if (this.softDelete && !includeSoftDelete) {
       this.softDeleteCheck(args);
     }
