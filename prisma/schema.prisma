@@ -109,7 +109,8 @@ model Church {
   programs      Program[]
   programTypes  ProgramType[]
   announcements Announcement[]
-  DonationType  DonationType[]
+  donationTypes  DonationType[]
+  donations      Donation[]
 
   @@map("church")
 }
@@ -162,7 +163,7 @@ model ProgramType {
   name        String
   description String
   status      Boolean @default(true)
-  isGlobal    Boolean @default(false)
+  isGlobal    Boolean @default(false) @map("is_global")
 
   churchId String? @map("church_id")
   chruch   Church? @relation(fields: [churchId], references: [id])
@@ -184,10 +185,10 @@ model Program {
 
   name          String
   description   String?
-  isFeatured    Boolean     @default(false)
+  isFeatured    Boolean     @default(false) @map("is_featured")
   status        Boolean     @default(true)
-  startDate     DateTime?
-  endDate       DateTime?
+  startDate     DateTime?   @map("start_date")
+  endDate       DateTime?   @map("end_date")
   // requiredRegistration Boolean @default()
   programTypeId String      @map("program_type_id")
   programType   ProgramType @relation(fields: [programTypeId], references: [id])
@@ -202,7 +203,6 @@ model Program {
 
   createdAt            DateTime       @default(now()) @map("created_at")
   updatedAt            DateTime       @default(now()) @map("updated_at")
-  userId               String?
   programAnnouncements Announcement[]
 
   @@map("program")
@@ -234,10 +234,10 @@ model DonationType {
   name        String
   description String
   status      Boolean @default(true)
-  isGlobal    Boolean @default(false)
+  isGlobal    Boolean @default(false) @map("is_global")
 
   churchId String? @map("church_id")
-  chruch   Church? @relation(fields: [churchId], references: [id])
+  church   Church? @relation(fields: [churchId], references: [id])
 
   createdBy     String @map("created_by")
   createdByUser User   @relation(fields: [createdBy], references: [id], name: "donation_type_created_by")
@@ -256,10 +256,13 @@ model Donation {
 
   amount Int
 
-  memberId String?
-  member   ChurchMember @relation(fields: [churchMemberId], references: [id])
+  churchMemberId String       @map("church_member_id")
+  member         ChurchMember @relation(fields: [churchMemberId], references: [id])
 
-  donationTypeId String
+  churchId String @map("church_id")
+  church   Church @relation(fields: [churchId], references: [id])
+
+  donationTypeId String       @map("donation_type_id")
   donationType   DonationType @relation(fields: [donationTypeId], references: [id])
 
   createdBy     String @map("created_by")
@@ -267,9 +270,8 @@ model Donation {
   updatedBy     String @map("updated_by")
   updatedByUser User   @relation(fields: [updatedBy], references: [id], name: "donation_updated_by")
 
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @default(now()) @map("updated_at")
-  churchMemberId String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
 
   @@map("donation")
 }

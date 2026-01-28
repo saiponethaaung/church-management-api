@@ -1,30 +1,30 @@
-import { Prisma } from '.prisma/client';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import { Injectable, Scope } from '@nestjs/common';
 import { Readable } from 'stream';
 
 interface DelegateFunctions {
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   findFirst(any);
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   findUnique(any);
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   findMany(any);
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   create(any);
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   createMany(any);
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   update(any);
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   updateMany(any);
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   count(any);
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   delete(any);
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   deleteMany(any);
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   stream(any);
 }
 @Injectable({ scope: Scope.REQUEST }) // Make BaseRepo request-scoped
@@ -46,7 +46,7 @@ export abstract class BaseRepo<
     protected softDelete: boolean = false,
   ) {}
 
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   private softDeleteCheck(args) {
     if (!args.where) {
       args.where = {};
@@ -56,7 +56,7 @@ export abstract class BaseRepo<
   }
 
   get model(): ModelDelegate {
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     return this.prisma[
       this.modelName[0].toLowerCase() + this.modelName.slice(1)
     ];
@@ -232,7 +232,7 @@ export abstract class BaseRepo<
     return this.model.deleteMany(args);
   }
 
-  protected rawQuery<T = unknown>(
+  protected rawQuery(
     query: TemplateStringsArray | Prisma.Sql,
     ...values: any[]
   ): Prisma.PrismaPromise<any> {
