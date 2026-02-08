@@ -6,6 +6,23 @@ type AccessToken {
   accessToken: String!
 }
 
+type AnnouncementPaginationResponse {
+  data: [AnnouncementResponse!]!
+  pagination: PaginationResponse!
+}
+
+type AnnouncementResponse {
+  churchId: String!
+  createdAt: DateTime!
+  createdBy: String!
+  id: String!
+  message: String
+  name: String!
+  programId: String!
+  updatedAt: DateTime!
+  updatedBy: String!
+}
+
 """churchAddress"""
 type ChurchAddress {
   street: String!
@@ -27,8 +44,43 @@ type ChurchResponse {
   verified: Boolean!
 }
 
+input CreateAnnouncementRequest {
+  churchId: String!
+  message: String
+  name: String!
+  programId: String!
+}
+
 """createChurch"""
 input CreateChurchData {
+  name: String!
+}
+
+input CreateDonationData {
+  amount: Float!
+  checkNumber: String
+  churchId: String!
+  churchMemberId: String
+  donationDate: String
+  donationTypeId: String!
+  householdId: String
+  isAnonymous: Boolean! = false
+  notes: String
+  paymentMethod: PaymentMethod! = CASH
+}
+
+input CreateDonationTypeData {
+  churchId: String
+  description: String
+  isTaxDeductible: Boolean! = true
+  name: String!
+  status: Boolean! = true
+}
+
+input CreateHouseholdData {
+  address: String
+  churchId: String!
+  memberIds: [String!]
   name: String!
 }
 
@@ -37,9 +89,47 @@ input CreateMemberData {
   churchId: String!
   dob: String
   email: String
+  householdId: String
   image: String
   name: String!
   phone: String
+}
+
+input CreateProgramPlanAttachmentRequest {
+  name: String
+  type: String
+  url: String!
+}
+
+input CreateProgramPlanRequest {
+  attachments: [CreateProgramPlanAttachmentRequest!]
+  content: String
+  date: DateTime
+  description: String
+  programId: String!
+  title: String
+}
+
+input CreateProgramRequest {
+  churchId: String!
+  description: String
+  endDate: DateTime
+  isFeatured: Boolean
+  isRecurring: Boolean
+  leaderId: String
+  mode: ProgramMode! = IN_PERSON
+  name: String!
+  programTypeId: String!
+  recurrence: String
+  startDate: DateTime
+  status: Boolean
+}
+
+input CreateProgramTypeData {
+  churchId: String
+  description: String!
+  name: String!
+  status: Boolean! = true
 }
 
 """
@@ -52,11 +142,125 @@ input DeleteMemberData {
   id: String!
 }
 
+type DonationHouseholdResponse {
+  id: String!
+  name: String!
+}
+
+type DonationMemberResponse {
+  email: String
+  id: String!
+  name: String!
+}
+
+type DonationPaginationResponse {
+  data: [DonationResponse!]!
+  pagination: PaginationResponse!
+}
+
+type DonationResponse {
+  amount: Float!
+  checkNumber: String
+  createdAt: String!
+  donationDate: String!
+  donationType: DonationTypeInfoResponse!
+  household: DonationHouseholdResponse
+  id: String!
+  isAnonymous: Boolean!
+  member: DonationMemberResponse
+  notes: String
+  paymentMethod: PaymentMethod!
+}
+
+type DonationTypeInfoResponse {
+  id: String!
+  isTaxDeductible: Boolean!
+  name: String!
+}
+
+type DonationTypePaginationResponse {
+  data: [DonationTypeResponse!]!
+  pagination: PaginationResponse!
+}
+
+type DonationTypeResponse {
+  churchId: String
+  description: String
+  id: String!
+  isGlobal: Boolean!
+  isTaxDeductible: Boolean!
+  name: String!
+  status: Boolean!
+}
+
+input GetAnnouncementsRequest {
+  churchId: String!
+  limit: Int! = 10
+  page: Int! = 1
+  programId: String
+}
+
+input GetDonationTypesData {
+  churchId: String
+  limit: Int! = 10
+  page: Int! = 1
+}
+
+input GetDonationsData {
+  churchId: String
+  donationTypeId: String
+  endDate: String
+  householdId: String
+  limit: Int! = 10
+  memberId: String
+  page: Int! = 1
+  startDate: String
+}
+
+input GetHouseholdsData {
+  churchId: String!
+  limit: Int! = 10
+  page: Int! = 1
+}
+
 """createMember"""
 input GetMembersData {
   churchId: String!
   limit: Int!
   page: Int!
+}
+
+input GetProgramPlansRequest {
+  isPast: Boolean
+  limit: Float! = 10
+  page: Float! = 1
+  programId: String!
+}
+
+input GetProgramTypesData {
+  churchId: String!
+  limit: Int! = 10
+  page: Int! = 1
+}
+
+input GetProgramsRequest {
+  churchId: String!
+  limit: Int! = 10
+  page: Int! = 1
+  programTypeId: String
+}
+
+type HouseholdPaginationResponse {
+  data: [HouseholdResponse!]!
+  pagination: PaginationResponse!
+}
+
+type HouseholdResponse {
+  address: String
+  churchId: String
+  id: String!
+  members: [MemberResponse]
+  name: String!
 }
 
 """memberAddress"""
@@ -87,12 +291,33 @@ type MessageResponse {
 }
 
 type Mutation {
+  createAnnouncement(createAnnouncement: CreateAnnouncementRequest!): AnnouncementResponse!
   createChurch(createChurch: CreateChurchData!): ChurchResponse!
+  createDonation(createDonation: CreateDonationData!): DonationResponse!
+  createDonationType(createDonationType: CreateDonationTypeData!): DonationTypeResponse!
+  createHousehold(createHousehold: CreateHouseholdData!): HouseholdResponse!
   createMember(createMember: CreateMemberData!): MemberResponse!
+  createProgram(createProgram: CreateProgramRequest!): ProgramResponse!
+  createProgramPlan(createProgramPlan: CreateProgramPlanRequest!): ProgramPlanResponse!
+  createProgramType(createProgramType: CreateProgramTypeData!): ProgramTypeResponse!
+  deleteAnnouncement(id: String!): MessageResponse!
+  deleteDonation(id: String!): MessageResponse!
+  deleteDonationType(id: String!): MessageResponse!
+  deleteHousehold(id: String!): MessageResponse!
   deleteMember(deleteMember: DeleteMemberData!): MessageResponse!
+  deleteProgram(id: String!): MessageResponse!
+  deleteProgramPlan(id: String!): MessageResponse!
+  deleteProgramType(id: String!): MessageResponse!
   login(loginData: UserLoginDTO!): AccessToken!
   register(registerData: UserRegisterDTO!): UserResponse!
+  updateAnnouncement(updateAnnouncement: UpdateAnnouncementRequest!): AnnouncementResponse!
+  updateDonation(updateDonation: UpdateDonationData!): DonationResponse!
+  updateDonationType(updateDonationType: UpdateDonationTypeData!): DonationTypeResponse!
+  updateHousehold(updateHousehold: UpdateHouseholdData!): HouseholdResponse!
   updateMember(updateMember: UpdateMemberData!): MemberResponse!
+  updateProgram(updateProgram: UpdateProgramRequest!): ProgramResponse!
+  updateProgramPlan(updateProgramPlan: UpdateProgramPlanRequest!): ProgramPlanResponse!
+  updateProgramType(updateProgramType: UpdateProgramTypeData!): ProgramTypeResponse!
 }
 
 """paginationResponse"""
@@ -103,21 +328,189 @@ type PaginationResponse {
   totalPage: Float!
 }
 
+enum PaymentMethod {
+  BANK_TRANSFER
+  CASH
+  CHECK
+  CREDIT_CARD
+  DEBIT_CARD
+  MOBILE_PAYMENT
+  ONLINE
+  OTHER
+}
+
+enum ProgramMode {
+  CLOSED
+  HYBRID
+  IN_PERSON
+  ONLINE
+}
+
+type ProgramPaginationResponse {
+  data: [ProgramResponse!]!
+  pagination: PaginationResponse!
+}
+
+type ProgramPlanAttachmentResponse {
+  createdAt: DateTime!
+  id: String!
+  name: String
+  type: String
+  url: String!
+}
+
+type ProgramPlanPaginationResponse {
+  data: [ProgramPlanResponse!]!
+  pagination: PaginationResponse!
+}
+
+type ProgramPlanResponse {
+  attachments: [ProgramPlanAttachmentResponse!]
+  content: String
+  createdAt: DateTime!
+  createdBy: String!
+  date: DateTime
+  description: String
+  id: String!
+  programId: String!
+  status: Boolean!
+  title: String
+  updatedAt: DateTime!
+  updatedBy: String!
+}
+
+type ProgramResponse {
+  churchId: String!
+  createdAt: DateTime!
+  createdBy: String!
+  description: String
+  endDate: DateTime
+  id: String!
+  isFeatured: Boolean!
+  isRecurring: Boolean!
+  leader: MemberResponse
+  leaderId: String
+  mode: ProgramMode!
+  name: String!
+  plans: [ProgramPlanResponse!]
+  programTypeId: String!
+  recurrence: String
+  startDate: DateTime
+  status: Boolean!
+  updatedAt: DateTime!
+  updatedBy: String!
+}
+
+type ProgramTypePaginationResponse {
+  data: [ProgramTypeResponse!]!
+  pagination: PaginationResponse!
+}
+
+type ProgramTypeResponse {
+  churchId: String
+  description: String!
+  id: String!
+  isGlobal: Boolean!
+  name: String!
+  status: Boolean!
+}
+
 type Query {
+  getAnnouncement(id: String!): AnnouncementResponse!
+  getAnnouncements(query: GetAnnouncementsRequest!): AnnouncementPaginationResponse!
   getChurch(id: String!): ChurchResponse!
   getChurchs: ChurchPaginationResponse!
+  getDonation(id: String!): DonationResponse!
+  getDonationType(id: String!): DonationTypeResponse!
+  getDonationTypes(query: GetDonationTypesData!): DonationTypePaginationResponse!
+  getDonations(query: GetDonationsData!): DonationPaginationResponse!
+  getHousehold(id: String!): HouseholdResponse!
+  getHouseholds(query: GetHouseholdsData!): HouseholdPaginationResponse!
   getMembers(getMembers: GetMembersData!): MemberPaginationResponse!
   getProfile: UserResponse!
+  getProgram(id: String!): ProgramResponse!
+  getProgramPlan(id: String!): ProgramPlanResponse!
+  getProgramPlans(query: GetProgramPlansRequest!): ProgramPlanPaginationResponse!
+  getProgramType(id: String!): ProgramTypeResponse!
+  getProgramTypes(query: GetProgramTypesData!): ProgramTypePaginationResponse!
+  getPrograms(query: GetProgramsRequest!): ProgramPaginationResponse!
+}
+
+input UpdateAnnouncementRequest {
+  id: String!
+  message: String
+  name: String
+}
+
+input UpdateDonationData {
+  amount: Float
+  checkNumber: String
+  donationDate: String
+  donationTypeId: String
+  id: String!
+  notes: String
+  paymentMethod: PaymentMethod
+}
+
+input UpdateDonationTypeData {
+  description: String
+  id: String!
+  isTaxDeductible: Boolean
+  name: String
+  status: Boolean
+}
+
+input UpdateHouseholdData {
+  address: String
+  churchId: String
+  id: String!
+  memberIds: [String!]
+  name: String
 }
 
 """updateMember"""
 input UpdateMemberData {
   dob: String
   email: String
+  householdId: String
   id: String!
   image: String
   name: String!
   phone: String
+}
+
+input UpdateProgramPlanRequest {
+  attachments: [CreateProgramPlanAttachmentRequest!]
+  content: String
+  date: DateTime
+  description: String
+  id: String!
+  programId: String
+  title: String
+}
+
+input UpdateProgramRequest {
+  churchId: String
+  description: String
+  endDate: DateTime
+  id: String!
+  isFeatured: Boolean
+  isRecurring: Boolean
+  leaderId: String
+  mode: ProgramMode = IN_PERSON
+  name: String
+  programTypeId: String
+  recurrence: String
+  startDate: DateTime
+  status: Boolean
+}
+
+input UpdateProgramTypeData {
+  churchId: String
+  description: String
+  id: String!
+  name: String
+  status: Boolean = true
 }
 
 input UserLoginDTO {

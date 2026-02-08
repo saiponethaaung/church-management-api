@@ -50,4 +50,9 @@ export class CreateMemberData {
   @IsDateString({}, { message: 'invalid_date' })
   @IsOptional({})
   dob?: string;
+  @Field({ nullable: true })
+  @IsString({ message: 'invalid_string' })
+  @IsUUID(7, { message: 'invalid_id' })
+  @IsOptional({})
+  householdId?: string;
 }

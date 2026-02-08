@@ -57,6 +57,10 @@ model User {
   updatedDonationTypes  DonationType[]     @relation(name: "donation_type_updated_by")
   createdDonations      Donation[]         @relation(name: "donation_created_by")
   updatedDonations      Donation[]         @relation(name: "donation_updated_by")
+  createdHouseholds     Household[]        @relation(name: "household_created_by")
+  updatedHouseholds     Household[]        @relation(name: "household_updated_by")
+  createdProgramPlans   ProgramPlan[]      @relation(name: "program_plan_created_by")
+  updatedProgramPlans   ProgramPlan[]      @relation(name: "program_plan_updated_by")
 
   @@map("user")
 }
@@ -109,8 +113,9 @@ model Church {
   programs      Program[]
   programTypes  ProgramType[]
   announcements Announcement[]
-  donationTypes  DonationType[]
-  donations      Donation[]
+  donationTypes DonationType[]
+  donations     Donation[]
+  households    Household[]
 
   @@map("church")
 }
@@ -153,6 +158,9 @@ model ChurchMember {
 
   createdByUser User?      @relation(fields: [createdBy], references: [id])
   donations     Donation[]
+  householdId   String?    @map("household_id")
+  household     Household? @relation(fields: [householdId], references: [id])
+  ledPrograms   Program[]  @relation(name: "program_leader")
 
   @@map("church_member")
 }
@@ -180,6 +188,13 @@ model ProgramType {
   @@map("program_type")
 }
 
+enum ProgramMode {
+  IN_PERSON
+  ONLINE
+  HYBRID
+  CLOSED
+}
+
 model Program {
   id String @id @default(uuid(7))
 
@@ -187,11 +202,18 @@ model Program {
   description   String?
   isFeatured    Boolean     @default(false) @map("is_featured")
   status        Boolean     @default(true)
+  mode          ProgramMode @default(IN_PERSON)
+  isRecurring   Boolean     @default(false) @map("is_recurring")
+  recurrence    String?     @map("recurrence")
   startDate     DateTime?   @map("start_date")
   endDate       DateTime?   @map("end_date")
   // requiredRegistration Boolean @default()
   programTypeId String      @map("program_type_id")
   programType   ProgramType @relation(fields: [programTypeId], references: [id])
+
+  leaderId String?       @map("leader_id")
+  leader   ChurchMember? @relation(fields: [leaderId], references: [id], name: "program_leader")
+  plans    ProgramPlan[]
 
   churchId String @map("church_id")
   church   Church @relation(fields: [churchId], references: [id])
@@ -212,7 +234,7 @@ model Announcement {
   id String @id @default(uuid(7))
 
   name    String
-  message String
+  message Json?
 
   churchId String @map("church_id")
   church   Church @relation(fields: [churchId], references: [id])
@@ -225,16 +247,20 @@ model Announcement {
   updatedBy     String @map("updated_by")
   updatedByUser User   @relation(fields: [updatedBy], references: [id], name: "announcement_updated_by")
 
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
   @@map("announcement")
 }
 
 model DonationType {
   id String @id @default(uuid(7))
 
-  name        String
-  description String
-  status      Boolean @default(true)
-  isGlobal    Boolean @default(false) @map("is_global")
+  name            String
+  description     String?
+  status          Boolean @default(true)
+  isGlobal        Boolean @default(false) @map("is_global")
+  isTaxDeductible Boolean @default(true) @map("is_tax_deductible")
 
   churchId String? @map("church_id")
   church   Church? @relation(fields: [churchId], references: [id])
@@ -251,13 +277,32 @@ model DonationType {
   @@map("donation_type")
 }
 
+enum PaymentMethod {
+  CASH
+  CHECK
+  CREDIT_CARD
+  DEBIT_CARD
+  BANK_TRANSFER
+  MOBILE_PAYMENT
+  ONLINE
+  OTHER
+}
+
 model Donation {
   id String @id @default(uuid(7))
 
-  amount Int
+  amount        Float
+  donationDate  DateTime      @default(now()) @map("donation_date")
+  paymentMethod PaymentMethod @default(CASH) @map("payment_method")
+  checkNumber   String?       @map("check_number")
+  notes         String?
+  isAnonymous   Boolean       @default(false) @map("is_anonymous")
 
-  churchMemberId String       @map("church_member_id")
-  member         ChurchMember @relation(fields: [churchMemberId], references: [id])
+  churchMemberId String?       @map("church_member_id")
+  member         ChurchMember? @relation(fields: [churchMemberId], references: [id])
+
+  householdId String?    @map("household_id")
+  household   Household? @relation(fields: [householdId], references: [id])
 
   churchId String @map("church_id")
   church   Church @relation(fields: [churchId], references: [id])
@@ -274,4 +319,69 @@ model Donation {
   updatedAt DateTime @default(now()) @map("updated_at")
 
   @@map("donation")
+}
+
+model Household {
+  id String @id @default(uuid(7))
+
+  name    String
+  address Json?
+
+  churchId String @map("church_id")
+  church   Church @relation(fields: [churchId], references: [id])
+
+  members ChurchMember[]
+
+  createdBy String @map("created_by")
+  updatedBy String @map("updated_by")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  createdByUser User       @relation(fields: [createdBy], references: [id], name: "household_created_by")
+  updatedByUser User       @relation(fields: [updatedBy], references: [id], name: "household_updated_by")
+  donations     Donation[]
+
+  @@map("household")
+}
+
+model ProgramPlan {
+  id String @id @default(uuid(7))
+
+  programId String  @map("program_id")
+  program   Program @relation(fields: [programId], references: [id])
+
+  title       String?
+  description String?
+  date        DateTime? @map("date")
+
+  content     Json?                   @map("content")
+  attachments ProgramPlanAttachment[]
+
+  status Boolean @default(true)
+
+  createdBy     String @map("created_by")
+  createdByUser User   @relation(fields: [createdBy], references: [id], name: "program_plan_created_by")
+  updatedBy     String @map("updated_by")
+  updatedByUser User   @relation(fields: [updatedBy], references: [id], name: "program_plan_updated_by")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  @@map("program_plan")
+}
+
+model ProgramPlanAttachment {
+  id String @id @default(uuid(7))
+
+  programPlanId String      @map("program_plan_id")
+  programPlan   ProgramPlan @relation(fields: [programPlanId], references: [id])
+
+  url  String
+  name String?
+  type String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("program_plan_attachment")
 }
