@@ -1,6 +1,7 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { ChurchMember } from '@prisma/client';
+import { ChurchMember, MemberType } from '@prisma/client';
 import { JsonValue } from '@prisma/client/runtime/library';
+import { MemberTypeResponse } from '../../../member-type/dto/response/member-type.response';
 
 @ObjectType({ description: 'memberAddress' })
 export class MemberAddress {
@@ -14,7 +15,7 @@ export class MemberAddress {
 
 @ObjectType({ description: 'member' })
 export class MemberResponse {
-  constructor(member?: ChurchMember) {
+  constructor(member?: ChurchMember & { memberType?: MemberType | null }) {
     if (member) {
       this.id = member.id;
       this.name = member.name;
@@ -28,6 +29,9 @@ export class MemberResponse {
             ? member.address['street']
             : '',
       });
+      this.memberType = member.memberType
+        ? new MemberTypeResponse(member.memberType)
+        : undefined;
     }
   }
 
@@ -51,4 +55,8 @@ export class MemberResponse {
 
   @Field(() => MemberAddress)
   address: MemberAddress;
+
+  @Field(() => MemberTypeResponse, { nullable: true })
+  memberType?: MemberTypeResponse;
 }
+

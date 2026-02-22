@@ -9,6 +9,7 @@ import { ProgramPlanModule } from './program-plan/program-plan.module';
 import { AnnouncementModule } from './announcement/announcement.module';
 import { DonationTypeModule } from './donation-type/donation-type.module';
 import { DonationModule } from './donation/donation.module';
+import { MemberTypeModule } from './member-type/member-type.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { DonationModule } from './donation/donation.module';
     ChurchModule,
     MemberModule,
     HouseholdModule,
+    MemberTypeModule,
     ProgramTypeModule,
     ProgramModule,
     ProgramPlanModule,

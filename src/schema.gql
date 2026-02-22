@@ -91,8 +91,17 @@ input CreateMemberData {
   email: String
   householdId: String
   image: String
+  memberTypeId: String
   name: String!
   phone: String
+}
+
+input CreateMemberTypeData {
+  churchId: String
+  description: String
+  isGlobal: Boolean = false
+  name: String!
+  status: Boolean = true
 }
 
 input CreateProgramPlanAttachmentRequest {
@@ -223,6 +232,12 @@ input GetHouseholdsData {
   page: Int! = 1
 }
 
+input GetMemberTypesData {
+  churchId: String
+  limit: Int = 10
+  page: Int = 1
+}
+
 """createMember"""
 input GetMembersData {
   churchId: String!
@@ -281,8 +296,25 @@ type MemberResponse {
   email: String
   id: String!
   image: String
+  memberType: MemberTypeResponse
   name: String!
   phone: String
+}
+
+type MemberTypePaginationResponse {
+  data: [MemberTypeResponse!]!
+  pagination: PaginationResponse!
+}
+
+type MemberTypeResponse {
+  churchId: String
+  createdAt: DateTime!
+  description: String
+  id: String!
+  isGlobal: Boolean!
+  name: String!
+  status: Boolean!
+  updatedAt: DateTime!
 }
 
 """message"""
@@ -297,6 +329,7 @@ type Mutation {
   createDonationType(createDonationType: CreateDonationTypeData!): DonationTypeResponse!
   createHousehold(createHousehold: CreateHouseholdData!): HouseholdResponse!
   createMember(createMember: CreateMemberData!): MemberResponse!
+  createMemberType(createMemberType: CreateMemberTypeData!): MemberTypeResponse!
   createProgram(createProgram: CreateProgramRequest!): ProgramResponse!
   createProgramPlan(createProgramPlan: CreateProgramPlanRequest!): ProgramPlanResponse!
   createProgramType(createProgramType: CreateProgramTypeData!): ProgramTypeResponse!
@@ -305,6 +338,7 @@ type Mutation {
   deleteDonationType(id: String!): MessageResponse!
   deleteHousehold(id: String!): MessageResponse!
   deleteMember(deleteMember: DeleteMemberData!): MessageResponse!
+  deleteMemberType(id: String!): MessageResponse!
   deleteProgram(id: String!): MessageResponse!
   deleteProgramPlan(id: String!): MessageResponse!
   deleteProgramType(id: String!): MessageResponse!
@@ -315,6 +349,7 @@ type Mutation {
   updateDonationType(updateDonationType: UpdateDonationTypeData!): DonationTypeResponse!
   updateHousehold(updateHousehold: UpdateHouseholdData!): HouseholdResponse!
   updateMember(updateMember: UpdateMemberData!): MemberResponse!
+  updateMemberType(updateMemberType: UpdateMemberTypeData!): MemberTypeResponse!
   updateProgram(updateProgram: UpdateProgramRequest!): ProgramResponse!
   updateProgramPlan(updateProgramPlan: UpdateProgramPlanRequest!): ProgramPlanResponse!
   updateProgramType(updateProgramType: UpdateProgramTypeData!): ProgramTypeResponse!
@@ -426,6 +461,8 @@ type Query {
   getDonations(query: GetDonationsData!): DonationPaginationResponse!
   getHousehold(id: String!): HouseholdResponse!
   getHouseholds(query: GetHouseholdsData!): HouseholdPaginationResponse!
+  getMemberType(id: String!): MemberTypeResponse!
+  getMemberTypes(query: GetMemberTypesData!): MemberTypePaginationResponse!
   getMembers(getMembers: GetMembersData!): MemberPaginationResponse!
   getProfile: UserResponse!
   getProgram(id: String!): ProgramResponse!
@@ -475,8 +512,18 @@ input UpdateMemberData {
   householdId: String
   id: String!
   image: String
+  memberTypeId: String
   name: String!
   phone: String
+}
+
+input UpdateMemberTypeData {
+  churchId: String
+  description: String
+  id: String!
+  isGlobal: Boolean = false
+  name: String
+  status: Boolean = true
 }
 
 input UpdateProgramPlanRequest {

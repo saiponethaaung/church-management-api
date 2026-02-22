@@ -16,7 +16,7 @@ export class MemberService {
 
   async createMember(
     user: User,
-    { churchId, householdId, ...dto }: CreateMemberData,
+    { churchId, householdId, memberTypeId, ...dto }: CreateMemberData,
   ): Promise<ServiceResponse<MemberResponse>> {
     //TODO: find user id if email is provided
 
@@ -25,6 +25,9 @@ export class MemberService {
         ...dto,
         church: { connect: { id: churchId } },
         ...(householdId && { household: { connect: { id: householdId } } }),
+        ...(memberTypeId && {
+          memberType: { connect: { id: memberTypeId } },
+        }),
         updatedBy: user.id,
         createdByUser: { connect: { id: user.id } },
       },
@@ -35,13 +38,16 @@ export class MemberService {
 
   async updateMember(
     user: User,
-    { id, householdId, ...dto }: UpdateMemberData,
+    { id, householdId, memberTypeId, ...dto }: UpdateMemberData,
   ): Promise<ServiceResponse<MemberResponse>> {
     const member = await this.repo.update({
       where: { id },
       data: {
         ...dto,
         ...(householdId && { household: { connect: { id: householdId } } }),
+        ...(memberTypeId && {
+          memberType: { connect: { id: memberTypeId } },
+        }),
         updatedBy: user.id,
       },
     });
@@ -58,6 +64,7 @@ export class MemberService {
       where: { churchId },
       skip: page === 1 ? 0 : (page - 1) * limit,
       take: limit,
+      include: { memberType: true },
     });
 
     const data = members.map((m) => new MemberResponse(m));

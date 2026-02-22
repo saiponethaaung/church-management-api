@@ -48,4 +48,10 @@ export class UpdateMemberData {
   @IsUUID(7, { message: 'invalid_id' })
   @IsOptional({})
   householdId?: string;
+
+  @Field({ nullable: true })
+  @IsString({ message: 'invalid_string' })
+  @IsUUID(7, { message: 'invalid_id' })
+  @IsOptional({})
+  memberTypeId?: string;
 }

@@ -61,6 +61,8 @@ model User {
   updatedHouseholds     Household[]        @relation(name: "household_updated_by")
   createdProgramPlans   ProgramPlan[]      @relation(name: "program_plan_created_by")
   updatedProgramPlans   ProgramPlan[]      @relation(name: "program_plan_updated_by")
+  createdMemberTypes    MemberType[]       @relation(name: "member_type_created_by")
+  updatedMemberTypes    MemberType[]       @relation(name: "member_type_updated_by")
 
   @@map("user")
 }
@@ -116,6 +118,7 @@ model Church {
   donationTypes DonationType[]
   donations     Donation[]
   households    Household[]
+  memberTypes   MemberType[]
 
   @@map("church")
 }
@@ -161,6 +164,9 @@ model ChurchMember {
   householdId   String?    @map("household_id")
   household     Household? @relation(fields: [householdId], references: [id])
   ledPrograms   Program[]  @relation(name: "program_leader")
+
+  memberTypeId String?     @map("member_type_id")
+  memberType   MemberType? @relation(fields: [memberTypeId], references: [id])
 
   @@map("church_member")
 }
@@ -384,4 +390,27 @@ model ProgramPlanAttachment {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("program_plan_attachment")
+}
+
+model MemberType {
+  id String @id @default(uuid(7))
+
+  name        String
+  description String?
+  status      Boolean @default(true)
+  isGlobal    Boolean @default(false) @map("is_global")
+
+  churchId String? @map("church_id")
+  church   Church? @relation(fields: [churchId], references: [id])
+
+  createdBy     String @map("created_by")
+  createdByUser User   @relation(fields: [createdBy], references: [id], name: "member_type_created_by")
+  updatedBy     String @map("updated_by")
+  updatedByUser User   @relation(fields: [updatedBy], references: [id], name: "member_type_updated_by")
+
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @default(now()) @map("updated_at")
+  churchMembers ChurchMember[]
+
+  @@map("member_type")
 }
