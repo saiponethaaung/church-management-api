@@ -11,7 +11,7 @@ import { HandledExceptionFilter } from '../handled-exception/handled-exception.f
 import { InputValidationExceptionFilter } from '../input-validation-exception/input-validation-exception.filter';
 import { ErrorObject } from 'src/interfaces/error-object.interface';
 import { LOG_LEVEL } from 'src/interfaces/logging.interface';
-import { Response } from 'express';
+import { FastifyReply } from 'fastify';
 import { GraphQLError } from 'graphql';
 
 @Catch()
@@ -31,9 +31,9 @@ export class GlobalExceptionHandlerFilter implements ExceptionFilter {
 
     const loggerService = new LoggingService(ctx.getRequest());
 
-    const response = ctx.getResponse<Response>();
+    const response = ctx.getResponse<FastifyReply>();
 
-    if (response.headersSent) {
+    if (response.sent) {
       return;
     }
 
@@ -113,6 +113,6 @@ export class GlobalExceptionHandlerFilter implements ExceptionFilter {
       );
     }
 
-    response.status(status).json(result);
+    response.status(status).send(result);
   }
 }

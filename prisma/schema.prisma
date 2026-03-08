@@ -45,24 +45,25 @@ model User {
 
   userVerification      UserVerification[]
   churches              Church[]
-  churchMembers         ChurchMember[]     @relation(name: "church_member_key")
+  churchMembers         ChurchMember[]               @relation(name: "church_member_key")
   churchMemberCreatedBy ChurchMember[]
-  createdPrograms       Program[]          @relation(name: "program_created_by")
-  updatedPrograms       Program[]          @relation(name: "program_updated_by")
-  createdProgramTypes   ProgramType[]      @relation(name: "program_type_created_by")
-  updatedProgramTypes   ProgramType[]      @relation(name: "program_type_updated_by")
-  createdAnnouncements  Announcement[]     @relation(name: "announcement_created_by")
-  updatedAnnouncements  Announcement[]     @relation(name: "announcement_updated_by")
-  createdDonationTypes  DonationType[]     @relation(name: "donation_type_created_by")
-  updatedDonationTypes  DonationType[]     @relation(name: "donation_type_updated_by")
-  createdDonations      Donation[]         @relation(name: "donation_created_by")
-  updatedDonations      Donation[]         @relation(name: "donation_updated_by")
-  createdHouseholds     Household[]        @relation(name: "household_created_by")
-  updatedHouseholds     Household[]        @relation(name: "household_updated_by")
-  createdProgramPlans   ProgramPlan[]      @relation(name: "program_plan_created_by")
-  updatedProgramPlans   ProgramPlan[]      @relation(name: "program_plan_updated_by")
-  createdMemberTypes    MemberType[]       @relation(name: "member_type_created_by")
-  updatedMemberTypes    MemberType[]       @relation(name: "member_type_updated_by")
+  createdPrograms       Program[]                    @relation(name: "program_created_by")
+  updatedPrograms       Program[]                    @relation(name: "program_updated_by")
+  createdProgramTypes   ProgramType[]                @relation(name: "program_type_created_by")
+  updatedProgramTypes   ProgramType[]                @relation(name: "program_type_updated_by")
+  createdAnnouncements  Announcement[]               @relation(name: "announcement_created_by")
+  updatedAnnouncements  Announcement[]               @relation(name: "announcement_updated_by")
+  createdDonationTypes  DonationType[]               @relation(name: "donation_type_created_by")
+  updatedDonationTypes  DonationType[]               @relation(name: "donation_type_updated_by")
+  createdDonations      Donation[]                   @relation(name: "donation_created_by")
+  updatedDonations      Donation[]                   @relation(name: "donation_updated_by")
+  createdHouseholds     Household[]                  @relation(name: "household_created_by")
+  updatedHouseholds     Household[]                  @relation(name: "household_updated_by")
+  createdProgramPlans   ProgramPlan[]                @relation(name: "program_plan_created_by")
+  updatedProgramPlans   ProgramPlan[]                @relation(name: "program_plan_updated_by")
+  sectionProposals      ProgramPlanSectionProposal[] @relation(name: "proposal_proposed_by")
+  createdMemberTypes    MemberType[]                 @relation(name: "member_type_created_by")
+  updatedMemberTypes    MemberType[]                 @relation(name: "member_type_updated_by")
 
   @@map("user")
 }
@@ -87,7 +88,16 @@ model UserVerification {
 }
 
 model Country {
-  id     String   @id @default(uuid(7))
+  id String @id @default(uuid(7))
+
+  name      String
+  code      String  @unique
+  phoneCode String? @map("phone_code")
+  status    Boolean @default(true)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
   church Church[]
 
   @@map("country")
@@ -363,6 +373,7 @@ model ProgramPlan {
 
   content     Json?                   @map("content")
   attachments ProgramPlanAttachment[]
+  sections    ProgramPlanSection[]
 
   status Boolean @default(true)
 
@@ -390,6 +401,50 @@ model ProgramPlanAttachment {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("program_plan_attachment")
+}
+
+enum ProgramPlanSectionType {
+  SIMPLE
+  SONG_LIST
+  BIBLE_VERSES
+  CUSTOM
+}
+
+model ProgramPlanSection {
+  id String @id @default(uuid(7))
+
+  programPlanId String      @map("program_plan_id")
+  programPlan   ProgramPlan @relation(fields: [programPlanId], references: [id], onDelete: Cascade)
+
+  title           String
+  type            ProgramPlanSectionType @default(SIMPLE)
+  content         Json?
+  durationMinutes Int?                   @map("duration_minutes")
+  sortOrder       Int                    @default(0) @map("sort_order")
+
+  proposals ProgramPlanSectionProposal[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("program_plan_section")
+}
+
+model ProgramPlanSectionProposal {
+  id String @id @default(uuid(7))
+
+  sectionId String             @map("section_id")
+  section   ProgramPlanSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  proposedBy     String @map("proposed_by")
+  proposedByUser User   @relation(fields: [proposedBy], references: [id], name: "proposal_proposed_by")
+
+  content  Json
+  accepted Boolean @default(false)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("program_plan_section_proposal")
 }
 
 model MemberType {

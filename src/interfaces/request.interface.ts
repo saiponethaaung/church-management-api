@@ -1,3 +1,5 @@
+import { FastifyRequest } from 'fastify';
+
 export interface AuthUserObject {
   id: string;
   name: string;
@@ -9,6 +11,6 @@ export interface AuthUserObject {
   updatedBy: string;
 }
 
-export interface AuthUserRequest extends Partial<Request> {
+export interface AuthUserRequest extends Partial<FastifyRequest> {
   user: AuthUserObject;
 }

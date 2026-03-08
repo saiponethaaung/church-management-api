@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "country" ALTER COLUMN "code" DROP DEFAULT,
+ALTER COLUMN "name" DROP DEFAULT;

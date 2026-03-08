@@ -11,7 +11,6 @@ export class UserJwtStrategy extends PassportStrategy(Strategy, 'user-jwt') {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: '10',
-      passReqToCallback: true,
     });
   }
 

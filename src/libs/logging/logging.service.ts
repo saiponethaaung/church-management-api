@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
+import { FastifyRequest } from 'fastify';
 import { LOG_LEVEL, LogPropsType } from 'src/interfaces/logging.interface';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -8,7 +8,7 @@ export class LoggingService {
   private readonly logger: Logger;
   private tenant: string;
 
-  constructor(@Inject(REQUEST) private request: Request) {
+  constructor(@Inject(REQUEST) private request: FastifyRequest) {
     // const env = request.env || {};
     // this.tenant =
     //   process.env.AWS_S3_BUCKET && env.KEYCLOAK_REALM

@@ -8,10 +8,12 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { LoggingModule } from './libs/logging/logging.module';
 import { UserCommonModule } from './modules/user/user-common.module';
+import { PublicModule } from './modules/public/public.module';
 import { join } from 'path';
 
 @Module({
   imports: [
+    PublicModule,
     ConfigModule.forRoot(),
     LoggingModule,
     PrismaModule,

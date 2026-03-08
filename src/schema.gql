@@ -119,6 +119,15 @@ input CreateProgramPlanRequest {
   title: String
 }
 
+input CreateProgramPlanSectionRequest {
+  content: String
+  durationMinutes: Float
+  programPlanId: String!
+  sortOrder: Float
+  title: String!
+  type: ProgramPlanSectionType
+}
+
 input CreateProgramRequest {
   churchId: String!
   description: String
@@ -139,6 +148,11 @@ input CreateProgramTypeData {
   description: String!
   name: String!
   status: Boolean! = true
+}
+
+input CreateProposalRequest {
+  content: String!
+  sectionId: String!
 }
 
 """
@@ -323,6 +337,7 @@ type MessageResponse {
 }
 
 type Mutation {
+  acceptProposal(id: String!): ProgramPlanSectionProposalResponse!
   createAnnouncement(createAnnouncement: CreateAnnouncementRequest!): AnnouncementResponse!
   createChurch(createChurch: CreateChurchData!): ChurchResponse!
   createDonation(createDonation: CreateDonationData!): DonationResponse!
@@ -330,26 +345,32 @@ type Mutation {
   createHousehold(createHousehold: CreateHouseholdData!): HouseholdResponse!
   createMember(createMember: CreateMemberData!): MemberResponse!
   createMemberType(createMemberType: CreateMemberTypeData!): MemberTypeResponse!
+  createPlanSection(createPlanSection: CreateProgramPlanSectionRequest!): ProgramPlanSectionResponse!
   createProgram(createProgram: CreateProgramRequest!): ProgramResponse!
   createProgramPlan(createProgramPlan: CreateProgramPlanRequest!): ProgramPlanResponse!
   createProgramType(createProgramType: CreateProgramTypeData!): ProgramTypeResponse!
+  createProposal(createProposal: CreateProposalRequest!): ProgramPlanSectionProposalResponse!
   deleteAnnouncement(id: String!): MessageResponse!
   deleteDonation(id: String!): MessageResponse!
   deleteDonationType(id: String!): MessageResponse!
   deleteHousehold(id: String!): MessageResponse!
   deleteMember(deleteMember: DeleteMemberData!): MessageResponse!
   deleteMemberType(id: String!): MessageResponse!
+  deletePlanSection(id: String!): MessageResponse!
   deleteProgram(id: String!): MessageResponse!
   deleteProgramPlan(id: String!): MessageResponse!
   deleteProgramType(id: String!): MessageResponse!
+  deleteProposal(id: String!): MessageResponse!
   login(loginData: UserLoginDTO!): AccessToken!
   register(registerData: UserRegisterDTO!): UserResponse!
+  reorderPlanSections(reorderPlanSections: ReorderProgramPlanSectionsRequest!): [ProgramPlanSectionResponse!]!
   updateAnnouncement(updateAnnouncement: UpdateAnnouncementRequest!): AnnouncementResponse!
   updateDonation(updateDonation: UpdateDonationData!): DonationResponse!
   updateDonationType(updateDonationType: UpdateDonationTypeData!): DonationTypeResponse!
   updateHousehold(updateHousehold: UpdateHouseholdData!): HouseholdResponse!
   updateMember(updateMember: UpdateMemberData!): MemberResponse!
   updateMemberType(updateMemberType: UpdateMemberTypeData!): MemberTypeResponse!
+  updatePlanSection(updatePlanSection: UpdateProgramPlanSectionRequest!): ProgramPlanSectionResponse!
   updateProgram(updateProgram: UpdateProgramRequest!): ProgramResponse!
   updateProgramPlan(updateProgramPlan: UpdateProgramPlanRequest!): ProgramPlanResponse!
   updateProgramType(updateProgramType: UpdateProgramTypeData!): ProgramTypeResponse!
@@ -414,6 +435,36 @@ type ProgramPlanResponse {
   updatedBy: String!
 }
 
+type ProgramPlanSectionProposalResponse {
+  accepted: Boolean!
+  content: String
+  createdAt: DateTime!
+  id: String!
+  proposedBy: String!
+  proposedByName: String
+  sectionId: String!
+}
+
+type ProgramPlanSectionResponse {
+  content: String
+  createdAt: DateTime!
+  durationMinutes: Int
+  id: String!
+  programPlanId: String!
+  proposals: [ProgramPlanSectionProposalResponse!]
+  sortOrder: Int!
+  title: String!
+  type: ProgramPlanSectionType!
+  updatedAt: DateTime!
+}
+
+enum ProgramPlanSectionType {
+  BIBLE_VERSES
+  CUSTOM
+  SIMPLE
+  SONG_LIST
+}
+
 type ProgramResponse {
   churchId: String!
   createdAt: DateTime!
@@ -464,6 +515,7 @@ type Query {
   getMemberType(id: String!): MemberTypeResponse!
   getMemberTypes(query: GetMemberTypesData!): MemberTypePaginationResponse!
   getMembers(getMembers: GetMembersData!): MemberPaginationResponse!
+  getPlanSections(programPlanId: String!): [ProgramPlanSectionResponse!]!
   getProfile: UserResponse!
   getProgram(id: String!): ProgramResponse!
   getProgramPlan(id: String!): ProgramPlanResponse!
@@ -471,6 +523,12 @@ type Query {
   getProgramType(id: String!): ProgramTypeResponse!
   getProgramTypes(query: GetProgramTypesData!): ProgramTypePaginationResponse!
   getPrograms(query: GetProgramsRequest!): ProgramPaginationResponse!
+  getSectionProposals(sectionId: String!): [ProgramPlanSectionProposalResponse!]!
+}
+
+input ReorderProgramPlanSectionsRequest {
+  programPlanId: String!
+  sectionIds: [String!]!
 }
 
 input UpdateAnnouncementRequest {
@@ -534,6 +592,16 @@ input UpdateProgramPlanRequest {
   id: String!
   programId: String
   title: String
+}
+
+input UpdateProgramPlanSectionRequest {
+  content: String
+  durationMinutes: Float
+  id: String!
+  programPlanId: String
+  sortOrder: Float
+  title: String
+  type: ProgramPlanSectionType
 }
 
 input UpdateProgramRequest {

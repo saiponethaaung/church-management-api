@@ -1,19 +1,21 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { VersioningType } from '@nestjs/common';
-import { NestExpressApplication } from '@nestjs/platform-express';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { InputValidationPipe } from './pipes/input-validation.pipe';
 import { GlobalExceptionHandlerFilter } from './filters/global-exception-handler/global-exception-handler.filter';
 import { ResponseFormatInterceptor } from './interceptors/response-format/response-format.interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import * as cookieParser from 'cookie-parser';
+import fastifyCookie from '@fastify/cookie';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    cors: {
-      origin: '*',
-    },
-  });
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter({ bodyLimit: 2 * 1024 * 1024 }),
+  );
+  
+  
+  app.enableCors();
 
   // Version
   app.enableVersioning({
@@ -21,9 +23,6 @@ async function bootstrap() {
     defaultVersion: '1',
     type: VersioningType.URI,
   });
-
-  // Increase the maximum request body size
-  app.useBodyParser('json', { limit: '2mb' });
 
   // Enable input/dto validation
   app.useGlobalPipes(new InputValidationPipe());
@@ -37,7 +36,9 @@ async function bootstrap() {
   // Set global prefix
   app.setGlobalPrefix('api');
 
-  app.use(cookieParser());
+  await app.register(fastifyCookie, {
+    secret: 'my-secret', // Optional, if you want signed cookies
+  });
 
   // Swagger setup
   const config = new DocumentBuilder()

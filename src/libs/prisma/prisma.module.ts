@@ -8,6 +8,8 @@ import { ProgramTypeRepo } from './repo/program-type.repo';
 
 import { ProgramRepo } from './repo/program.repo';
 import { ProgramPlanRepo } from './repo/program-plan.repo';
+import { ProgramPlanSectionRepo } from './repo/program-plan-section.repo';
+import { ProgramPlanSectionProposalRepo } from './repo/program-plan-section-proposal.repo';
 import { AnnouncementRepo } from './repo/announcement.repo';
 import { DonationTypeRepo as RepoDonationType } from './repo/donation-type.repo';
 import { DonationRepo as RepoDonation } from './repo/donation.repo';
@@ -26,6 +28,8 @@ import { DonationRepo } from './repo/donation.repo';
     ProgramTypeRepo,
     ProgramRepo,
     ProgramPlanRepo,
+    ProgramPlanSectionRepo,
+    ProgramPlanSectionProposalRepo,
     AnnouncementRepo,
     DonationTypeRepo,
     DonationRepo,
@@ -39,6 +43,8 @@ import { DonationRepo } from './repo/donation.repo';
     ProgramTypeRepo,
     ProgramRepo,
     ProgramPlanRepo,
+    ProgramPlanSectionRepo,
+    ProgramPlanSectionProposalRepo,
     AnnouncementRepo,
     DonationTypeRepo,
     DonationRepo,

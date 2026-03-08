@@ -18,7 +18,8 @@ export class ResponseFormatInterceptor implements NestInterceptor {
       return next.handle();
     }
 
-    const url = context.switchToHttp().getRequest().route.path;
+    const req = context.switchToHttp().getRequest();
+    const url = req.route?.path || req.originalUrl || req.url;
 
     if (EXCLUDE_URLS.includes(url)) {
       return next.handle();

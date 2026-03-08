@@ -6,6 +6,8 @@ import { HouseholdModule } from './household/household.module';
 import { ProgramTypeModule } from './program-type/program-type.module';
 import { ProgramModule } from './program/program.module';
 import { ProgramPlanModule } from './program-plan/program-plan.module';
+import { ProgramPlanSectionModule } from './program-plan-section/program-plan-section.module';
+import { ProgramPlanProposalModule } from './program-plan-proposal/program-plan-proposal.module';
 import { AnnouncementModule } from './announcement/announcement.module';
 import { DonationTypeModule } from './donation-type/donation-type.module';
 import { DonationModule } from './donation/donation.module';
@@ -21,6 +23,8 @@ import { MemberTypeModule } from './member-type/member-type.module';
     ProgramTypeModule,
     ProgramModule,
     ProgramPlanModule,
+    ProgramPlanSectionModule,
+    ProgramPlanProposalModule,
     AnnouncementModule,
     DonationTypeModule,
     DonationModule,
